@@ -5,7 +5,7 @@ Un script Tampermonkey qui permet de filtrer les réponses de Claude pour n'affi
 ## Installation
 
 1. Installez [Tampermonkey](https://www.tampermonkey.net/) pour votre navigateur
-2. [Cliquez ici pour installer le script](https://raw.githubusercontent.com/DamienMarill/claude-output-filter/main/claude-output-filter.user.js)
+2. [Cliquez ici pour installer le script](https://raw.githubusercontent.com/DamienMarill/claude_output_filter/main/claude-output-filter.user.js)
 
 ## Fonctionnalités
 

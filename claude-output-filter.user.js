@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude Output Filter
 // @namespace    https://github.com/DamienMarill/claude_output_filter
-// @version      1.0.0
+// @version      1.0.1
 // @description  Filter Claude's responses to show only output content
 // @author       Ton Nom
 // @match        https://claude.ai/chat/*
@@ -10,8 +10,8 @@
 // @license      MIT
 // @supportURL   https://github.com/DamienMarill/claude_output_filter/issues
 // @homepageURL  https://github.com/DamienMarill/claude_output_filter
-// @updateURL    https://raw.githubusercontent.com/DamienMarill/claude-output-filter/main/claude-output-filter.user.js
-// @downloadURL  https://raw.githubusercontent.com/DamienMarill/claude-output-filter/main/claude-output-filter.user.js
+// @updateURL    https://raw.githubusercontent.com/DamienMarill/claude_output_filter/main/claude-output-filter.user.js
+// @downloadURL  https://raw.githubusercontent.com/DamienMarill/claude_output_filter/main/claude-output-filter.user.js
 // ==/UserScript==
 
 (function() {
