@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude Output Filter
 // @namespace    https://github.com/DamienMarill/claude_output_filter
-// @version      1.0.2
+// @version      1.1.0
 // @description  Filter Claude's responses to show only output content
 // @author       Marill
 // @match        https://claude.ai/chat/*
@@ -18,6 +18,57 @@
     'use strict';
 
     let filterEnabled = true;
+    let isInitialized = false;
+
+    // Vérifie si on est sur une page de chat
+    const isChatPage = () => {
+        return window.location.pathname.startsWith('/chat/');
+    };
+
+    // Nettoie l'état précédent
+    const cleanup = () => {
+        // Supprime le bouton s'il existe
+        const button = document.getElementById('toggleFilter');
+        if (button) button.parentElement.remove();
+
+        // Déconnecte l'observer s'il existe
+        if (window.messageObserver) {
+            window.messageObserver.disconnect();
+            delete window.messageObserver;
+        }
+
+        isInitialized = false;
+    };
+
+        // Gère les changements de route
+    const handleRouteChange = () => {
+        console.log('Route changed:', window.location.pathname);
+
+        // Nettoie toujours l'état précédent
+        cleanup();
+
+        // Initialise si on est sur une page de chat
+        if (isChatPage()) {
+            console.log('Chat page detected, initializing...');
+            init();
+        }
+    };
+
+    // Initialise l'observation des changements de route
+    const setupRouteObserver = () => {
+        // Observe les changements via l'API History
+        const originalPushState = history.pushState;
+        history.pushState = function() {
+            originalPushState.apply(this, arguments);
+            handleRouteChange();
+        };
+
+        // Gère le bouton retour/avant du navigateur
+        window.addEventListener('popstate', handleRouteChange);
+
+        // Vérifie la route initiale
+        handleRouteChange();
+    };
 
     const addFloatingButton = () => {
         const container = document.querySelector('.sticky.top-0.z-10 .hidden.flex-row-reverse');
@@ -188,6 +239,8 @@ const setupObserver = () => {
 };
 
     const init = () => {
+        if (isInitialized) return;
+
         setTimeout(() => {
             // Ajoute d'abord le bouton
             addFloatingButton();
@@ -197,12 +250,19 @@ const setupObserver = () => {
 
             // Enfin, applique le filtre initial
             toggleAllMessages();
-        }, 2000);
+
+            isInitialized = true;
+        }, 1500);
+    };
+        // Point d'entrée du script
+    const start = () => {
+        console.log('Starting script...');
+        setupRouteObserver();
     };
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
-        init();
+        start();
     }
 })();
