@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Claude Output Filter
 // @namespace    https://github.com/DamienMarill/claude_output_filter
-// @version      1.1.0
+// @version      1.1.1
 // @description  Filter Claude's responses to show only output content
 // @author       Marill
-// @match        https://claude.ai/chat/*
+// @match        https://claude.ai/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=claude.ai
 // @grant        none
 // @license      MIT
