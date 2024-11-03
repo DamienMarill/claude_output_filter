@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Claude Output Filter
 // @namespace    https://github.com/DamienMarill/claude_output_filter
-// @version      1.1.1
+// @version      1.1.2
 // @description  Filter Claude's responses to show only output content
 // @author       Marill
 // @match        https://claude.ai/*
@@ -131,27 +131,61 @@ inline-flex
         const content = messageEl.querySelector('.grid-cols-1.grid.gap-2\\.5');
         if (!content) return null;
 
-        const filteredDiv = document.createElement('div');
-        filteredDiv.classList.add('filtered-message', 'font-claude-message');
+        const filteredDiv = messageEl.cloneNode(true);
+        filteredDiv.classList.add('filtered-message');
 
-        // Ajoute les classes de formatage
-        filteredDiv.classList.add(
-            'pr-4',
-            'md:pr-9',
-            'relative',
-            'leading-[1.65rem]',
-            '[&_pre>div]:bg-bg-300',
-            '[&_.ignore-pre-bg>div]:bg-transparent',
-            '[&_pre]:-mr-4',
-            'md:[&_pre]:-mr-9'
-        );
+        const contentToFilter = filteredDiv.querySelector('.grid-cols-1.grid.gap-2\\.5');
+        if (contentToFilter) {
+            contentToFilter.innerHTML = extractOutput(content.innerHTML);
+        }
 
-        filteredDiv.style.cssText = messageEl.style.cssText;
+        // Map pour stocker les paires de boutons (original -> clone)
+        const buttonPairs = new Map();
 
-        const filteredContent = extractOutput(content.innerHTML);
-        filteredDiv.innerHTML = `<div class="grid-cols-1 grid gap-2.5">${filteredContent}</div>`;
+        const copyButtons = messageEl.querySelectorAll('button');
+        copyButtons.forEach((originalButton, index) => {
+            const clonedButton = originalButton.cloneNode(true);
 
-        // État initial basé sur filterEnabled
+            // Stocke la paire de boutons
+            buttonPairs.set(originalButton, clonedButton);
+
+            clonedButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                originalButton.click();
+            });
+
+            const filteredButtons = filteredDiv.querySelectorAll('button');
+            if (filteredButtons[index]) {
+                filteredButtons[index].replaceWith(clonedButton);
+            }
+
+            // Observer pour les changements sur le bouton original
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                        // Synchronise le contenu
+                        clonedButton.innerHTML = originalButton.innerHTML;
+                        // Synchronise les classes
+                        clonedButton.className = originalButton.className;
+                        // Synchronise les attributs
+                        Array.from(originalButton.attributes).forEach(attr => {
+                            if (attr.name !== 'data-original-button') {
+                                clonedButton.setAttribute(attr.name, attr.value);
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Observe tous les changements possibles
+            observer.observe(originalButton, {
+                childList: true,
+                attributes: true,
+                characterData: true,
+                subtree: true
+            });
+        });
+
         filteredDiv.style.display = filterEnabled ? 'block' : 'none';
         messageEl.style.display = filterEnabled ? 'none' : 'block';
 
